@@ -85,10 +85,10 @@ async function render(){
       cell.className = 'cell';
       const qr = qrImg(row.URL);
       cell.innerHTML = `
-        <strong>${row.Giorno} Dicembre</strong><br><br>
+        <h3>${row.Giorno} Dicembre</h3><br><br>
         <em>Titolo:</em> ${row.Titolo}<br>
         <em>Artista:</em> <span class="artist">${row.Artista}</span><br>
-        <em>Proposto da:</em> ${row['Proposto da'] || '—'}<br><br>
+        <em>Proposto da:</em><strong> ${row['Proposto da'] || '—'}</strong><br><br>
         ${qr ? `<a href="${row.URL}" target="_blank" rel="noopener" class="listen-link">▶️ Ascolta</a><br>` : ''}
         ${qr ? `<img src="${qr}" alt="QR per giorno ${row.Giorno}" class="qr-img">` : '<p>URL non disponibile</p>'}
       `;
