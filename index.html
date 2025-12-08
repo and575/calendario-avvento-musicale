@@ -130,5 +130,35 @@ async function render() {
 /* Avvio */
 render();
  </script>
+<!-- ==================== FORM DI PROPOSTA ==================== -->
+<h2 style="margin-top:40px;">Aggiungi un nuovo brano</h2>
+<form id="proposalForm">
+  <label>Giorno (1‑24):
+    <input type="number" name="Giorno" min="1" max="24" required>
+  </label><br><br>
+
+  <label>Titolo:
+    <input type="text" name="Titolo" required>
+  </label><br><br>
+
+  <label>Artista:
+    <input type="text" name="Artista" required>
+  </label><br><br>
+
+  <label>Proposto da:
+    <input type="text" name="Proposto da" required>
+  </label><br><br>
+
+  <label>URL YouTube Music:
+    <input type="url" name="URL" placeholder="https://music.youtube.com/…" required>
+  </label><br><br>
+
+  <!-- (Facoltativo) token di sicurezza -->
+  <input type="hidden" name="token" value="MY_SECRET">
+
+  <button type="submit">Invia proposta</button>
+</form>
+
+<p id="formMessage" style="margin-top:10px;"></p>
 </body>
 </html>
