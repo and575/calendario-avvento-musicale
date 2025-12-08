@@ -12,39 +12,159 @@
   .listen-link{display:inline-block;margin-top:6px;color:#0066cc;text-decoration:none;font-weight:600;}
   .listen-link:hover{ text-decoration:underline; }
   .qr-img{margin-top:8px;border:1px solid #ddd;border-radius:4px;}
+/* --- Form proposta brano --- */
+.form-section{
+  max-width: 520px;
+  margin: 40px auto;
+}
+
+.form-card{
+  background:#ffffff;
+  border-radius:16px;
+  padding:24px 24px 20px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 10px 25px rgba(15,23,42,0.06);
+}
+
+.form-card h2{
+  margin-top:0;
+  margin-bottom:4px;
+  font-size:1.35rem;
+  color:#111827;
+}
+
+.form-subtitle{
+  margin:0 0 20px;
+  font-size:0.9rem;
+  color:#6b7280;
+}
+
+.form-grid{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.form-field label{
+  display:block;
+  font-size:0.85rem;
+  font-weight:600;
+  color:#4b5563;
+  margin-bottom:4px;
+}
+
+.form-field input{
+  width:100%;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  padding:9px 11px;
+  font-size:0.95rem;
+  background:#f9fafb;
+  transition:border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.form-field input:focus{
+  outline:none;
+  border-color:#2563eb;
+  box-shadow:0 0 0 1px rgba(37,99,235,0.35);
+  background:#ffffff;
+}
+
+.form-hint{
+  font-size:0.78rem;
+  color:#9ca3af;
+  margin-top:2px;
+}
+
+.form-actions{
+  margin-top:18px;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:12px;
+}
+
+.form-button{
+  border:none;
+  border-radius:999px;
+  padding:9px 18px;
+  font-size:0.9rem;
+  font-weight:600;
+  cursor:pointer;
+  background:#2563eb;
+  color:#ffffff;
+  box-shadow:0 8px 20px rgba(37,99,235,0.25);
+  transition:background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.form-button:hover{
+  background:#1d4ed8;
+  transform:translateY(-1px);
+  box-shadow:0 12px 30px rgba(37,99,235,0.35);
+}
+
+.form-button:active{
+  transform:translateY(0);
+  box-shadow:0 6px 15px rgba(37,99,235,0.2);
+}
+
+#formMessage{
+  margin-top:10px;
+  font-size:0.85rem;
+}
+
+  
 </style>
 </head>
 <body>
 
 <h1>Calendario Avvento Musicale</h1>
-
 <div id="calendar" class="grid"></div>
-<h2 style="margin-top:40px;">Aggiungi un nuovo brano</h2>
-<form id="proposalForm">
-  <label>Giorno (9‑30):
-    <input type="number" name="Giorno" min="9" max="30" required>
-  </label><br><br>
 
-  <label>Titolo:
-    <input type="text" name="Titolo" required>
-  </label><br><br>
+<div class="form-section">
+  <div class="form-card">
+    <h2>Aggiungi un nuovo brano</h2>
+    <p class="form-subtitle">
+      Compila i campi qui sotto per proporre un brano per il calendario.
+    </p>
 
-  <label>Artista:
-    <input type="text" name="Artista" required>
-  </label><br><br>
+    <form id="proposalForm" class="form-grid">
+      <div class="form-field">
+        <label for="giorno">Giorno (9–30)</label>
+        <input id="giorno" type="number" name="Giorno" min="9" max="30" required>
+        <p class="form-hint">Scegli un giorno ancora libero del calendario.</p>
+      </div>
 
-  <label>Proposto da:
-    <input type="text" name="Proposto da" required>
-  </label><br><br>
+      <div class="form-field">
+        <label for="titolo">Titolo</label>
+        <input id="titolo" type="text" name="Titolo" required>
+      </div>
 
-  <label>URL YouTube Music:
-    <input type="url" name="URL" placeholder="https://music.youtube.com/…" required>
-  </label><br><br>
+      <div class="form-field">
+        <label for="artista">Artista</label>
+        <input id="artista" type="text" name="Artista" required>
+      </div>
 
-  <button type="submit">Invia proposta</button>
-</form>
+      <div class="form-field">
+        <label for="propostoDa">Proposto da</label>
+        <input id="propostoDa" type="text" name="Proposto da" required>
+      </div>
 
-<p id="formMessage" style="margin-top:10px;"></p>
+      <div class="form-field">
+        <label for="url">URL YouTube Music</label>
+        <input id="url" type="url" name="URL"
+               placeholder="https://music.youtube.com/…" required>
+        <p class="form-hint">Incolla il link al brano (meglio se da YouTube Music).</p>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="form-button">Invia proposta</button>
+      </div>
+    </form>
+
+    <p id="formMessage"></p>
+  </div>
+</div>
 
 <script>
 /* ---------- CONFIGURAZIONE ---------- */
