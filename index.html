@@ -85,7 +85,7 @@ async function render(){
       cell.className = 'cell';
       const qr = qrImg(row.URL);
       cell.innerHTML = `
-        <strong>Dicembre ${row.Giorno}</strong><br><br>
+        <strong>${row.Giorno} Dicembre</strong><br><br>
         <em>Titolo:</em> ${row.Titolo}<br>
         <em>Artista:</em> <span class="artist">${row.Artista}</span><br>
         <em>Proposto da:</em> ${row['Proposto da'] || '—'}<br><br>
