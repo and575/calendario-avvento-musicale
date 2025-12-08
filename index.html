@@ -1,71 +1,70 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Calendario Avvento Musicale</title>
-  <style>
-    body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background: #f5f7fa;
-  color: #333;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  color: #2c3e50;
-  margin-bottom: 30px;
-}
-
-/* Griglia 6×4 (adatta anche a schermi piccoli) */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-/* Celle */
-.cell {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,.06);
-}
-
-/* Artista in rosso (come nel tuo esempio) */
-.artist {
-  color: #e74c3c;
-}
-
-/* Link “Ascolta” */
-.listen-link {
-  display: inline-block;
-  margin-top: 6px;
-  color: #0066cc;
-  text-decoration: none;
-  font-weight: 600;
-}
-.listen-link:hover {
-  text-decoration: underline;
-}
-
-/* QR */
-.qr-img {
-  margin-top: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-  </style>
+<meta charset="UTF-8">
+<title>Calendario Avvento Musicale</title>
+<style>
+  body{
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    background:#f5f7fa;color:#333;padding:20px;
+  }
+  h1{ text-align:center;color:#2c3e50;margin-bottom:30px; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;
+  }
+  .cell{
+    background:#fff;border:1px solid #e0e0e0;border-radius:8px;
+    padding:12px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.06);
+  }
+  .artist{color:#e74c3c;}
+  .listen-link{
+    display:inline-block;margin-top:6px;color:#0066cc;
+    text-decoration:none;font-weight:600;
+  }
+  .listen-link:hover{ text-decoration:underline; }
+  .qr-img{margin-top:8px;border:1px solid #ddd;border-radius:4px;}
+</style>
 </head>
 <body>
-  <h1>Calendario Avvento Musicale</h1>
-<div class="grid" id="calendar"></div>
+
+<h1>Calendario Avvento Musicale</h1>
+
+<div id="calendar" class="grid"></div>
+
+<!-- ==================== FORM DI PROPOSTA ==================== -->
+<h2 style="margin-top:40px;">Aggiungi un nuovo brano</h2>
+<form id="proposalForm">
+  <label>Giorno (1‑24):
+    <input type="number" name="Giorno" min="1" max="24" required>
+  </label><br><br>
+
+  <label>Titolo:
+    <input type="text" name="Titolo" required>
+  </label><br><br>
+
+  <label>Artista:
+    <input type="text" name="Artista" required>
+  </label><br><br>
+
+  <label>Proposto da:
+    <input type="text" name="Proposto da" required>
+  </label><br><br>
+
+  <label>URL YouTube Music:
+    <input type="url" name="URL" placeholder="https://music.youtube.com/…" required>
+  </label><br><br>
+
+  <button type="submit">Invia proposta</button>
+</form>
+
+<p id="formMessage" style="margin-top:10px;"></p>
 
 <script>
 /* ---------- CONFIGURAZIONE ---------- */
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbB8anD_KDj7SJ_2zoUdRQsVSEl5HSoOe20m4PGYB73BqnJ9Kx5HS2dfokbOMeQiIQJJPzRvo1N3xv/pub?gid=0&single=true&output=csv';
+const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuu-4htMEnS5imYLfPRlJGGCy3x_TB-RrL5g61RIGx4N7x6VBpX8BU6uvwR4asdWt4hg/exec'; // <-- verifica che sia corretto
 
 /* ---------- FUNZIONI ---------- */
 // Parsing CSV con trim dei valori
@@ -76,9 +75,7 @@ function parseCSV(text){
   return rows.slice(1).map(line=>{
     const cols = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
     const obj = {};
-    headers.forEach((h,i)=>{
-      obj[h] = (cols[i] || '').replace(/^"|"$/g,'').trim();
-    });
+    headers.forEach((h,i)=> obj[h] = (cols[i]||'').replace(/^"|"$/g,'').trim());
     return obj;
   });
 }
@@ -107,95 +104,76 @@ async function render(){
       const cell = document.createElement('div');
       cell.className = 'cell';
 
-      const qr = qrImg(row.URL);   // URL già pulito dal CSV
+      const qr = qrImg(row.URL);
       cell.innerHTML = `
         <strong>Giorno ${row.Giorno}</strong><br><br>
         <em>Titolo:</em> ${row.Titolo}<br>
         <em>Artista:</em> <span class="artist">${row.Artista}</span><br>
         <em>Proposto da:</em> ${row['Proposto da'] || '—'}<br><br>
-        ${qr ? `<a href="${row.URL}" target="_blank" rel="noopener">▶️ Ascolta</a><br>` : ''}
+        ${qr ? `<a href="${row.URL}" target="_blank" rel="noopener" class="listen-link">▶️ Ascolta</a><br>` : ''}
         ${qr ? `<img src="${qr}" alt="QR per giorno ${row.Giorno}" class="qr-img">` : '<p>URL non disponibile</p>'}
       `;
       container.appendChild(cell);
     });
   }catch(err){
-    console.error('Errore:', err);
+    console.error('Errore nel render:', err);
     document.getElementById('calendar').innerHTML =
       `<p style="color:red;">Impossibile caricare i dati. Controlla l’URL del CSV.</p>`;
   }
 }
 
-/* Avvio */
-render();
-/* ------------------- CONFIGURAZIONE ------------------- */
-const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuu-4htMEnS5imYLfPRlJGGCy3x_TB-RrL5g61RIGx4N7x6VBpX8BU6uvwR4asdWt4hg/exec'; // <-- MODIFICA
-
-/* ------------------- GESTIONE DEL FORM ------------------- */
-document.getElementById('proposalForm').addEventListener('submit', async e => {
-  e.preventDefault();                     // evita il reload della pagina
-  const form = e.target;
-  const data = {};
-
-  // Costruisci l'oggetto con tutti i campi del form
-  new FormData(form).forEach((val, key) => data[key] = val.trim());
-
+/* ---------- GESTIONE DEL FORM ---------- */
+function initFormHandler(){
+  const form = document.getElementById('proposalForm');
   const msgEl = document.getElementById('formMessage');
-  msgEl.textContent = 'Invio in corso…';
-  msgEl.style.color = '#555';
 
-  try {
-    const resp = await fetch(APP_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'cors',                       // Apps Script abilita CORS di default
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-
-    const result = await resp.json();
-
-    if (result.status === 'ok') {
-      msgEl.textContent = '✅ Proposta registrata! Aggiornamento calendario…';
-      msgEl.style.color = '#28a745';
-      form.reset();                      // pulisci il form
-      render();                          // ricarica il calendario (mostra subito il nuovo brano)
-    } else {
-      throw new Error(result.msg || 'Errore sconosciuto');
-    }
-  } catch (err) {
-    console.error(err);
-    msgEl.textContent = `❌ Errore: ${err.message}`;
-    msgEl.style.color = '#c00';
+  if (!form) {
+    console.error('Form non trovato nel DOM!');
+    return;
   }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();                     // evita il reload della pagina
+    const data = {};
+
+    // Costruisci l'oggetto con tutti i campi del form
+    new FormData(form).forEach((val, key) => data[key] = val.trim());
+
+    msgEl.textContent = 'Invio in corso…';
+    msgEl.style.color = '#555';
+
+    try {
+      const resp = await fetch(APP_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+
+      const result = await resp.json();
+
+      if (result.status === 'ok') {
+        msgEl.textContent = '✅ Proposta registrata! Aggiornamento calendario…';
+        msgEl.style.color = '#28a745';
+        form.reset();                      // pulisci il form
+        render();                          // ricarica il calendario
+      } else {
+        throw new Error(result.msg || 'Errore sconosciuto');
+      }
+    } catch (err) {
+      console.error('Errore nella submit:', err);
+      msgEl.textContent = `❌ Errore: ${err.message}`;
+      msgEl.style.color = '#c00';
+    }
+  });
+}
+
+/* ---------- AVVIO ---------- */
+window.addEventListener('DOMContentLoaded', () => {
+  render();          // disegna il calendario
+  initFormHandler(); // attiva il listener del form
 });
+</script>
 
-   
- </script>
-<!-- ==================== FORM DI PROPOSTA ==================== -->
-<h2 style="margin-top:40px;">Aggiungi un nuovo brano</h2>
-<form id="proposalForm">
-  <label>Giorno (1‑24):
-    <input type="number" name="Giorno" min="1" max="24" required>
-  </label><br><br>
-
-  <label>Titolo:
-    <input type="text" name="Titolo" required>
-  </label><br><br>
-
-  <label>Artista:
-    <input type="text" name="Artista" required>
-  </label><br><br>
-
-  <label>Proposto da:
-    <input type="text" name="Proposto da" required>
-  </label><br><br>
-
-  <label>URL YouTube Music:
-    <input type="url" name="URL" placeholder="https://music.youtube.com/…" required>
-  </label><br><br>
-
-  <button type="submit">Invia proposta</button>
-</form>
-
-<p id="formMessage" style="margin-top:10px;"></p>
 </body>
 </html>
