@@ -62,68 +62,66 @@ h1 {
 <body>
   <h1>Calendario Avvento Musicale</h1>
 <div class="grid" id="calendar"></div>
- <script>
-   const csvUrl =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbB8anD_KDj7SJ_2zoUdRQsVSEl5HSoOe20m4PGYB73BqnJ9Kx5HS2dfokbOMeQiIQJJPzRvo1N3xv/pub?gid=0&single=true&output=csv';
 
-/* Parsing CSV più resistente a virgole dentro i campi (usa regex semplice) */
-function parseCSV(text) {
+<script>
+/* ---------- CONFIGURAZIONE ---------- */
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbB8anD_KDj7SJ_2zoUdRQsVSEl5HSoOe20m4PGYB73BqnJ9Kx5HS2dfokbOMeQiIQJJPzRvo1N3xv/pub?gid=0&single=true&output=csv';
+
+/* ---------- FUNZIONI ---------- */
+// Parsing CSV con trim dei valori
+function parseCSV(text){
   const rows = text.trim().split('\n');
-  const header = rows[0].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(h => h.replace(/^"|"$/g, '').trim());
+  const headers = rows[0].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(h=>h.replace(/^"|"$/g,'').trim());
 
-  return rows.slice(1).map(line => {
+  return rows.slice(1).map(line=>{
     const cols = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
     const obj = {};
-    header.forEach((h, i) => {
-      obj[h] = (cols[i] ?? '').replace(/^"|"$/g, '').trim();
+    headers.forEach((h,i)=>{
+      obj[h] = (cols[i] || '').replace(/^"|"$/g,'').trim();
     });
     return obj;
   });
 }
 
-/* QR generator – dimensione parametrica */
-function qrImg(url, size = 150) {
+// Genera QR‑code con encodeURIComponent
+function qrImg(url, size = 150){
+  if (!url) return '';
   const enc = encodeURIComponent(url);
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${enc}`;
 }
 
-/* Rendering della griglia */
-async function render() {
-  try {
+/* ---------- RENDER ---------- */
+async function render(){
+  try{
     const resp = await fetch(csvUrl);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = parseCSV(await resp.text());
 
-    const txt = await resp.text();
-    const data = parseCSV(txt);
-
-    // Ordina per giorno (colonna “Giorno”)
-    data.sort((a, b) => Number(a.Giorno) - Number(b.Giorno));
+    // Ordina per giorno (colonna "Giorno")
+    data.sort((a,b)=> Number(a.Giorno) - Number(b.Giorno));
 
     const container = document.getElementById('calendar');
     container.innerHTML = '';
 
-    data.forEach(row => {
+    data.forEach(row=>{
       const cell = document.createElement('div');
       cell.className = 'cell';
 
-      // Costruzione del markup (template literal)
+      const qr = qrImg(row.URL);   // URL già pulito dal CSV
       cell.innerHTML = `
-        <strong>${row.Giorno}</strong><br><br>
+        <strong>Giorno ${row.Giorno}</strong><br><br>
         <em>Titolo:</em> ${row.Titolo}<br>
         <em>Artista:</em> <span class="artist">${row.Artista}</span><br>
-        <em>Proposto da:</em> ${row['Proposto da'] || row.PropostoDa || '—'}<br><br>
-        <a href="${row.URL}" target="_blank" rel="noopener" class="listen-link">
-          ▶️ Ascolta direttamente
-        </a><br><br>
-        <img src="${qrImg(row.URL, 150)}" alt="QR per giorno ${row.Giorno}" class="qr-img">
+        <em>Proposto da:</em> ${row['Proposto da'] || '—'}<br><br>
+        ${qr ? `<a href="${row.URL}" target="_blank" rel="noopener">▶️ Ascolta</a><br>` : ''}
+        ${qr ? `<img src="${qr}" alt="QR per giorno ${row.Giorno}" class="qr-img">` : '<p>URL non disponibile</p>'}
       `;
-
       container.appendChild(cell);
     });
-  } catch (err) {
-    console.error('Errore durante il caricamento del CSV:', err);
+  }catch(err){
+    console.error('Errore:', err);
     document.getElementById('calendar').innerHTML =
-      '<p style="color:red;">Impossibile caricare i dati. Controlla l’URL del CSV.</p>';
+      `<p style="color:red;">Impossibile caricare i dati. Controlla l’URL del CSV.</p>`;
   }
 }
 
