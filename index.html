@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendario Avvento Musicale</title>
+  <style>
+    body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #f5f7fa;
+  color: #333;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+/* Griglia 6×4 (adatta anche a schermi piccoli) */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+/* Celle */
+.cell {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,.06);
+}
+
+/* Artista in rosso (come nel tuo esempio) */
+.artist {
+  color: #e74c3c;
+}
+
+/* Link “Ascolta” */
+.listen-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+.listen-link:hover {
+  text-decoration: underline;
+}
+
+/* QR */
+.qr-img {
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+  </style>
+</head>
+<body>
+  <h1>Calendario Avvento Musicale</h1>
+<div class="grid" id="calendar"></div>
+ <script>
+   const csvUrl =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbB8anD_KDj7SJ_2zoUdRQsVSEl5HSoOe20m4PGYB73BqnJ9Kx5HS2dfokbOMeQiIQJJPzRvo1N3xv/pub?gid=0&single=true&output=csv';
+
+/* Parsing CSV più resistente a virgole dentro i campi (usa regex semplice) */
+function parseCSV(text) {
+  const rows = text.trim().split('\n');
+  const header = rows[0].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(h => h.replace(/^"|"$/g, '').trim());
+
+  return rows.slice(1).map(line => {
+    const cols = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+    const obj = {};
+    header.forEach((h, i) => {
+      obj[h] = (cols[i] ?? '').replace(/^"|"$/g, '').trim();
+    });
+    return obj;
+  });
+}
+
+/* QR generator – dimensione parametrica */
+function qrImg(url, size = 150) {
+  const enc = encodeURIComponent(url);
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${enc}`;
+}
+
+/* Rendering della griglia */
+async function render() {
+  try {
+    const resp = await fetch(csvUrl);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const txt = await resp.text();
+    const data = parseCSV(txt);
+
+    // Ordina per giorno (colonna “Giorno”)
+    data.sort((a, b) => Number(a.Giorno) - Number(b.Giorno));
+
+    const container = document.getElementById('calendar');
+    container.innerHTML = '';
+
+    data.forEach(row => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      // Costruzione del markup (template literal)
+      cell.innerHTML = `
+        <strong>${row.Giorno}</strong><br><br>
+        <em>Titolo:</em> ${row.Titolo}<br>
+        <em>Artista:</em> <span class="artist">${row.Artista}</span><br>
+        <em>Proposto da:</em> ${row['Proposto da'] || row.PropostoDa || '—'}<br><br>
+        <a href="${row.URL}" target="_blank" rel="noopener" class="listen-link">
+          ▶️ Ascolta direttamente
+        </a><br><br>
+        <img src="${qrImg(row.URL, 150)}" alt="QR per giorno ${row.Giorno}" class="qr-img">
+      `;
+
+      container.appendChild(cell);
+    });
+  } catch (err) {
+    console.error('Errore durante il caricamento del CSV:', err);
+    document.getElementById('calendar').innerHTML =
+      '<p style="color:red;">Impossibile caricare i dati. Controlla l’URL del CSV.</p>';
+  }
+}
+
+/* Avvio */
+render();
+ </script>
+</body>
+</html>
