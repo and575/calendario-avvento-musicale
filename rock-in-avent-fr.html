@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock in Avent – Calendrier musical</title>
+  <style>
+    :root{
+      --bg-body:#030712;
+      --bg-panel:#020617;
+      --accent:#f97316;
+      --accent-soft:#fed7aa;
+      --text-main:#e5e7eb;
+      --text-muted:#9ca3af;
+      --border:#1f2937;
+    }
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      padding:24px 16px 32px;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+      background:radial-gradient(circle at top,#111827 0,#020617 45%,#000 100%);
+      color:var(--text-main);
+    }
+
+    .page{
+      max-width:1000px;
+      margin:0 auto;
+    }
+
+    h1{
+      text-align:center;
+      margin:0 0 6px;
+      font-size:2.1rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#f9fafb;
+      text-shadow:0 0 14px rgba(248,250,252,0.2),
+                  0 0 32px rgba(248,113,113,0.35);
+    }
+
+    .subtitle{
+      text-align:center;
+      font-size:.95rem;
+      color:var(--text-muted);
+      margin:0 0 24px;
+    }
+
+    .tagline{
+      text-align:center;
+      font-size:.8rem;
+      color:var(--accent-soft);
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      margin-bottom:28px;
+    }
+
+    #status{
+      text-align:center;
+      font-size:.85rem;
+      color:var(--text-muted);
+      margin-bottom:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:16px;
+    }
+
+    .cell{
+      position:relative;
+      background:radial-gradient(circle at top left,#111827 0,#020617 55%,#020617 100%);
+      border-radius:18px;
+      padding:14px 12px 12px;
+      border:1px solid var(--border);
+      box-shadow:0 14px 35px rgba(15,23,42,.7);
+      overflow:hidden;
+      min-height:150px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:stretch;
+    }
+
+    .day-number{
+      font-size:1.15rem;
+      font-weight:700;
+      color:var(--accent-soft);
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .door-content{
+      opacity:0;
+      transform:translateY(8px);
+      transition:opacity .22s ease, transform .22s ease;
+      font-size:.9rem;
+    }
+
+    .cell.open .door-content{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .title{
+      font-weight:700;
+      color:#f9fafb;
+      margin-bottom:2px;
+    }
+
+    .artist{
+      color:#f97316;
+      font-size:.9rem;
+      margin-bottom:6px;
+    }
+
+    .proposed-by{
+      font-size:.78rem;
+      color:var(--text-muted);
+      margin-bottom:4px;
+    }
+
+    .listen-link{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:4px;
+      font-size:.85rem;
+      font-weight:600;
+      text-decoration:none;
+      color:#38bdf8;
+    }
+    .listen-link::before{
+      content:"▶";
+      font-size:.7rem;
+    }
+    .listen-link:hover{
+      text-decoration:underline;
+    }
+
+    .empty{
+      font-size:.8rem;
+      color:var(--text-muted);
+    }
+
+    /* Porte */
+    .door{
+      position:absolute;
+      inset:0;
+      border:none;
+      cursor:pointer;
+      background:linear-gradient(135deg,#7f1d1d 0,#b91c1c 45%,#f97316 100%);
+      color:#f9fafb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.3rem;
+      font-weight:800;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      transition:
+        transform .24s ease,
+        opacity .24s ease,
+        box-shadow .22s ease,
+        background .22s ease,
+        filter .2s ease;
+      box-shadow:0 20px 45px rgba(127,29,29,.85);
+      border-radius:18px;
+      text-shadow:0 0 12px rgba(248,250,252,.35);
+    }
+
+    .door:hover:not(.door-locked):not(:disabled){
+      transform:translateY(-2px) scale(1.01);
+      box-shadow:0 28px 60px rgba(127,29,29,.95);
+      filter:brightness(1.06);
+    }
+
+    .door:active:not(.door-locked):not(:disabled){
+      transform:translateY(0) scale(.99);
+      box-shadow:0 16px 32px rgba(127,29,29,.7);
+    }
+
+    .door-open{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .door-locked{
+      cursor:default;
+      background:repeating-linear-gradient(
+        135deg,
+        #020617,
+        #020617 10px,
+        #111827 10px,
+        #111827 20px
+      );
+      box-shadow:0 16px 40px rgba(15,23,42,.9);
+      font-size:1rem;
+      letter-spacing:.2em;
+      text-shadow:none;
+    }
+
+    .cell.open .door{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .notice{
+      text-align:center;
+      font-size:.8rem;
+      color:var(--text-muted);
+      margin-top:18px;
+    }
+
+    @media (max-width:600px){
+      body{padding:18px 12px 26px;}
+      h1{font-size:1.7rem;}
+      .cell{min-height:140px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Rock in Avent</h1>
+    <p class="subtitle">
+      Un titre par jour jusqu’à Noël. Les cases futures restent fermées, seuls les jours débloqués peuvent être ouverts.
+    </p>
+    <p class="tagline">Calendrier musical – version française</p>
+
+    <p id="status">Chargement du calendrier…</p>
+
+    <div id="calendar" class="grid"></div>
+
+    <p class="notice">
+      Les morceaux sont chargés depuis une feuille Google Sheets commune
+      (<strong>Giorno, Titolo, Artista, Proposto da, URL</strong>).
+      L’état des cases ouvertes est enregistré sur cet appareil (localStorage).
+    </p>
+  </div>
+
+  <script>
+    // Même feuille que la version italienne
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqcYY8zIGx9HtwbeLBpq_1nGVdPIOA5Sb-GiMkc--Prmh0UXiJJHq1_HrjqWZTqMxM48aJH0XLfjKM/pub?gid=0&single=true&output=csv';
+
+    // Clé localStorage pour cette version FR (separata dalla versione IT)
+    const STORAGE_KEY = 'rockInAvent_fr_openDays_v1';
+
+    function loadOpenDays(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .map(n => parseInt(n, 10))
+          .filter(n => !isNaN(n));
+      }catch(e){
+        return [];
+      }
+    }
+
+    function saveOpenDays(days){
+      try{
+        const unique = Array.from(new Set(days)).sort((a,b) => a - b);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(unique));
+      }catch(e){
+        // niente: se localStorage è disabilitato non blocchiamo l’app
+      }
+    }
+
+    function parseCSV(text){
+      const rows = text.trim().split(/\r?\n/);
+      if (rows.length === 0) return [];
+
+      const headers = rows[0].split(',').map(h =>
+        h.replace(/^"|"$/g, '').trim()
+      );
+
+      return rows.slice(1).map(line => {
+        const cols = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => {
+          obj[h] = (cols[i] || '').replace(/^"|"$/g, '').trim();
+        });
+        return obj;
+      });
+    }
+
+    async function renderCalendar(){
+      const statusEl = document.getElementById('status');
+      const container = document.getElementById('calendar');
+      let openDays = loadOpenDays();
+
+      try{
+        const resp = await fetch(csvUrl);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const text = await resp.text();
+        const data = parseCSV(text);
+
+        // Mappa Giorno → riga
+        const byDay = {};
+        data.forEach(row => {
+          const d = parseInt(row['Giorno'], 10);
+          if (!isNaN(d)) byDay[d] = row;
+        });
+
+        const now = new Date();
+        const todayDay = now.getDate();    // 1–31
+        const todayMonth = now.getMonth(); // 0–11 (0 = janvier, 11 = décembre)
+
+        const FIRST_DAY = 9;
+        const LAST_DAY  = 31;
+
+        container.innerHTML = '';
+
+        for (let day = FIRST_DAY; day <= LAST_DAY; day++){
+          const info = byDay[day];
+
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+
+          const dayEl = document.createElement('div');
+          dayEl.className = 'day-number';
+          dayEl.textContent = 'Jour ' + day;
+          cell.appendChild(dayEl);
+
+          const content = document.createElement('div');
+          content.className = 'door-content';
+
+          if (info){
+            const titolo = info['Titolo'] || '';
+            const artista = info['Artista'] || '';
+            const proposto = info['Proposto da'] || '';
+            const url = info['URL'] || '';
+
+            content.innerHTML = `
+              <div class="title">${titolo}</div>
+              <div class="artist">${artista}</div>
+              ${proposto ? `<div class="proposed-by">Proposé par : ${proposto}</div>` : ''}
+              ${url ? `<a class="listen-link" href="${url}" target="_blank" rel="noopener">Écouter le morceau</a>` : ''}
+            `;
+          } else {
+            content.innerHTML = `<div class="empty">Aucun morceau renseigné pour ce jour.</div>`;
+          }
+
+          cell.appendChild(content);
+
+          const door = document.createElement('button');
+          door.type = 'button';
+          door.className = 'door';
+
+          const isFuture = day > todayDay && todayMonth === 11; // en décembre : les jours > aujourd'hui sont bloqués
+          const isOpen = !isFuture && openDays.includes(day);
+
+          if (isFuture){
+            // Jour futur : verrouillé
+            door.classList.add('door-locked');
+            door.disabled = true;
+            door.textContent = 'LOCK';
+            door.title = `Disponible le ${day} décembre`;
+          } else {
+            if (isOpen){
+              // déjà ouvert sur cet appareil
+              cell.classList.add('open');
+              door.classList.add('door-open');
+              door.disabled = true;
+            } else {
+              // jour déblocable (≤ aujourd’hui)
+              door.textContent = (day === todayDay) ? 'OUVRIR' : '🎸';
+              door.addEventListener('click', () => {
+                cell.classList.add('open');
+                door.classList.add('door-open');
+                door.disabled = true;
+
+                openDays.push(day);
+                saveOpenDays(openDays);
+              });
+            }
+          }
+
+          cell.appendChild(door);
+          container.appendChild(cell);
+        }
+
+        statusEl.textContent = '';
+      } catch(err){
+        console.error(err);
+        statusEl.textContent = 'Impossible de charger le calendrier. Vérifiez l’URL du CSV.';
+        statusEl.style.color = '#fecaca';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderCalendar);
+  </script>
+</body>
+</html>
