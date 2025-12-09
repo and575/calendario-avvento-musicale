@@ -260,11 +260,13 @@
         </p>
 
         <form id="proposalForm" class="form-grid">
-          <div class="form-field">
-            <label for="giorno">Giorno (1–31)</label>
-            <input id="giorno" type="number" name="Giorno" min="1" max="31" required>
-            <p class="form-hint">Numero del giorno che userai nel calendario (stessa colonna “Giorno” del foglio).</p>
-          </div>
+         <div class="form-field">
+  <label for="giorno">Giorno (1–31)</label>
+  <select id="giorno" name="Giorno" required></select>
+  <p class="form-hint" id="giornoHint">
+    Seleziona uno dei giorni ancora liberi.
+  </p>
+</div>
 
           <div class="form-field">
             <label for="titolo">Titolo</label>
@@ -324,65 +326,174 @@
       Rock in Avvento – GitHub Pages · foglio Google condiviso per tutti i calendari.
     </footer>
   </div>
+<script>
+  // 👉 Lascia qui lo stesso URL /exec che usi già per il calendario IT classico
+  const APP_SCRIPT_URL = 'https://script.google.com/macros/s/IL_TUO_URL_EXEC/exec';
 
-  <script>
-    // 👉 Sostituisci con l’URL della tua Web App Apps Script che usi per il calendario IT classico
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgpAeaRRtw62_UGl6hKPHp6OxcpXUxEhscoi35DOzTNoKXbKJgBdDvZH5BohRoEZseMg/exec';
+  // Stesso CSV usato da Rock in Avent FR
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqcYY8zIGx9HtwbeLBpq_1nGVdPIOA5Sb-GiMkc--Prmh0UXiJJHq1_HrjqWZTqMxM48aJH0XLfjKM/pub?gid=0&single=true&output=csv';
 
-    function initFormHandler(){
-      const form = document.getElementById('proposalForm');
-      const msgEl = document.getElementById('formMessage');
-      if (!form) return;
+  const FIRST_DAY = 9;
+  const LAST_DAY  = 31;
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+  function parseCSV(text){
+    const rows = text.trim().split(/\r?\n/);
+    if (rows.length === 0) return [];
 
-        const data = {};
-        new FormData(form).forEach((v,k)=> data[k] = (v || '').toString().trim());
+    const headers = rows[0].split(',').map(h =>
+      h.replace(/^"|"$/g, '').trim()
+    );
 
-        msgEl.textContent = 'Invio in corso…';
-        msgEl.style.color = '#e5e7eb';
-
-        try{
-          const resp = await fetch(APP_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-              // text/plain per evitare problemi di CORS/preflight
-              'Content-Type': 'text/plain;charset=utf-8'
-            },
-            body: JSON.stringify(data)
-          });
-
-          if (!resp.ok){
-            throw new Error('HTTP ' + resp.status);
-          }
-
-          let json = {};
-          try {
-            json = await resp.json();
-          } catch(e){
-            // se la risposta non è JSON valido, non blocchiamo
-          }
-
-          if (json.status === 'ok' || Object.keys(json).length === 0){
-            msgEl.textContent = '✅ Brano inviato correttamente al foglio.';
-            msgEl.style.color = '#bbf7d0';
-            form.reset();
-          } else {
-            throw new Error(json.msg || 'Risposta non valida dal server');
-          }
-        } catch(err){
-          console.error(err);
-          msgEl.textContent = '❌ Errore durante l’invio: ' + err.message;
-          msgEl.style.color = '#fecaca';
-        }
+    return rows.slice(1).map(line => {
+      const cols = line.split(',');
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = (cols[i] || '').replace(/^"|"$/g, '').trim();
       });
-    }
+      return obj;
+    });
+  }
 
-    window.addEventListener('DOMContentLoaded', initFormHandler);
-  </script>
+  async function populateFreeDays(){
+    const select = document.getElementById('giorno');
+    const hint   = document.getElementById('giornoHint');
+    const form   = document.getElementById('proposalForm');
+    if (!select) return;
+
+    // stato iniziale
+    select.innerHTML = '';
+    const loadingOpt = document.createElement('option');
+    loadingOpt.value = '';
+    loadingOpt.textContent = 'Caricamento giorni liberi…';
+    select.appendChild(loadingOpt);
+    select.disabled = true;
+
+    try{
+      const resp = await fetch(CSV_URL);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+
+      const text = await resp.text();
+      const data = parseCSV(text);
+
+      // giorni già usati nel foglio
+      const usedDays = new Set();
+      data.forEach(row => {
+        const d = parseInt(row['Giorno'], 10);
+        if (!isNaN(d)) usedDays.add(d);
+      });
+
+      const freeDays = [];
+      for (let d = FIRST_DAY; d <= LAST_DAY; d++){
+        if (!usedDays.has(d)) freeDays.push(d);
+      }
+
+      select.innerHTML = '';
+
+      if (freeDays.length === 0){
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'Nessun giorno libero';
+        select.appendChild(opt);
+        select.disabled = true;
+        if (form){
+          const btn = form.querySelector('button[type="submit"]');
+          if (btn) btn.disabled = true;
+        }
+        if (hint){
+          hint.textContent = 'Tutti i giorni tra 9 e 31 sono già occupati nel foglio.';
+        }
+        return;
+      }
+
+      freeDays.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        select.appendChild(opt);
+      });
+
+      select.disabled = false;
+      if (hint){
+        hint.textContent = 'Seleziona uno dei giorni ancora liberi (le informazioni vengono lette dal foglio Google).';
+      }
+    } catch(err){
+      console.error(err);
+      // fallback: tutti i giorni disponibili, ma avvisi l’utente
+      select.innerHTML = '';
+      for (let d = FIRST_DAY; d <= LAST_DAY; d++){
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        select.appendChild(opt);
+      }
+      select.disabled = false;
+      if (hint){
+        hint.textContent = 'Non sono riuscito a leggere il foglio: verifica i giorni occupati direttamente nel foglio.';
+      }
+    }
+  }
+
+  function initFormHandler(){
+    const form = document.getElementById('proposalForm');
+    const msgEl = document.getElementById('formMessage');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {};
+      new FormData(form).forEach((v,k)=> data[k] = (v || '').toString().trim());
+
+      msgEl.textContent = 'Invio in corso…';
+      msgEl.style.color = '#e5e7eb';
+
+      try{
+        const resp = await fetch(APP_SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            // text/plain per evitare problemi di CORS/preflight
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!resp.ok){
+          throw new Error('HTTP ' + resp.status);
+        }
+
+        let json = {};
+        try {
+          json = await resp.json();
+        } catch(e){
+          // se la risposta non è JSON valido, non blocchiamo
+        }
+
+        if (json.status === 'ok' || Object.keys(json).length === 0){
+          msgEl.textContent = '✅ Brano inviato correttamente al foglio.';
+          msgEl.style.color = '#bbf7d0';
+          form.reset();
+          // ricarico i giorni liberi (così sparisce il giorno appena usato)
+          populateFreeDays();
+        } else {
+          throw new Error(json.msg || 'Risposta non valida dal server');
+        }
+      } catch(err){
+        console.error(err);
+        msgEl.textContent = '❌ Errore durante l’invio: ' + err.message;
+        msgEl.style.color = '#fecaca';
+      }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    initFormHandler();
+    populateFreeDays();
+  });
+</script>
+
 </body>
 </html>
+
 
 
 
