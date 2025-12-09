@@ -27,7 +27,26 @@
       background:radial-gradient(circle at top,#111827 0,#020617 45%,#000 100%);
       color:var(--text-main);
     }
-
+    .back-home{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:.85rem;
+  color:#e5e7eb;
+  text-decoration:none;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(15,23,42,0.85);
+  border:1px solid #374151;
+  margin-bottom:10px;
+  box-shadow:0 6px 16px rgba(15,23,42,0.7);
+}
+.back-home:hover{
+  background:rgba(31,41,55,0.95);
+}
+.back-home span.icon{
+  font-size:1rem;
+}
     .page{
       max-width:900px;
       margin:0 auto;
@@ -243,6 +262,10 @@
 </head>
 <body>
   <div class="page">
+      <a href="avent-home.html" class="back-home">
+      <span class="icon">←</span>
+      <span>Retour à la page d’accueil</span>
+    </a>
     <h1>Rock in Avent</h1>
     <p class="subtitle">
       Un titre par jour jusqu’à la fin du mois. Les cases futures restent fermées, seuls les jours déjà débloqués peuvent être ouverts.
@@ -418,6 +441,7 @@
   </script>
 </body>
 </html>
+
 
 
 
