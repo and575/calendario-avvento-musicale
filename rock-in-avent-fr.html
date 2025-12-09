@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Rock in Avent – Calendrier musical</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     :root{
       --bg-body:#030712;
@@ -20,66 +22,80 @@
 
     body{
       margin:0;
-      padding:24px 16px 32px;
+      padding:20px 10px 28px;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
       background:radial-gradient(circle at top,#111827 0,#020617 45%,#000 100%);
       color:var(--text-main);
     }
 
     .page{
-      max-width:1000px;
+      max-width:900px;
       margin:0 auto;
     }
 
     h1{
       text-align:center;
       margin:0 0 6px;
-      font-size:2.1rem;
+      font-size:1.9rem;
       letter-spacing:.08em;
       text-transform:uppercase;
       color:#f9fafb;
-      text-shadow:0 0 14px rgba(248,250,252,0.2),
-                  0 0 32px rgba(248,113,113,0.35);
+      text-shadow:0 0 10px rgba(248,250,252,0.2),
+                  0 0 25px rgba(248,113,113,0.35);
     }
 
     .subtitle{
       text-align:center;
-      font-size:.95rem;
+      font-size:.9rem;
       color:var(--text-muted);
-      margin:0 0 24px;
+      margin:0 0 14px;
+      padding:0 8px;
     }
 
     .tagline{
       text-align:center;
-      font-size:.8rem;
+      font-size:.78rem;
       color:var(--accent-soft);
       text-transform:uppercase;
       letter-spacing:.16em;
-      margin-bottom:28px;
+      margin-bottom:18px;
     }
 
     #status{
       text-align:center;
       font-size:.85rem;
       color:var(--text-muted);
-      margin-bottom:14px;
+      margin-bottom:10px;
     }
 
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-      gap:16px;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;
+    }
+
+    /* Su telefono: una colonna per leggere e cliccare più facilmente */
+    @media (max-width:600px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+      body{
+        padding:16px 8px 24px;
+      }
+      h1{
+        font-size:1.7rem;
+      }
     }
 
     .cell{
       position:relative;
       background:radial-gradient(circle at top left,#111827 0,#020617 55%,#020617 100%);
       border-radius:18px;
-      padding:14px 12px 12px;
+      padding:12px 12px 10px;
       border:1px solid var(--border);
-      box-shadow:0 14px 35px rgba(15,23,42,.7);
+      box-shadow:0 10px 24px rgba(15,23,42,.75);
       overflow:hidden;
-      min-height:150px;
+      min-height:140px;
       display:flex;
       flex-direction:column;
       justify-content:flex-start;
@@ -87,12 +103,12 @@
     }
 
     .day-number{
-      font-size:1.15rem;
+      font-size:1.05rem;
       font-weight:700;
       color:var(--accent-soft);
-      margin-bottom:6px;
+      margin-bottom:4px;
       text-transform:uppercase;
-      letter-spacing:.08em;
+      letter-spacing:.06em;
     }
 
     .door-content{
@@ -130,17 +146,21 @@
       align-items:center;
       gap:6px;
       margin-top:4px;
-      font-size:.85rem;
+      font-size:.9rem;
       font-weight:600;
       text-decoration:none;
       color:#38bdf8;
+      padding:6px 9px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.8);
     }
     .listen-link::before{
       content:"▶";
       font-size:.7rem;
     }
     .listen-link:hover{
-      text-decoration:underline;
+      text-decoration:none;
+      background:rgba(30,64,175,0.9);
     }
 
     .empty{
@@ -159,30 +179,32 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:1.3rem;
+      font-size:1.2rem;
       font-weight:800;
       letter-spacing:.16em;
       text-transform:uppercase;
       transition:
-        transform .24s ease,
+        transform .18s ease,
         opacity .24s ease,
-        box-shadow .22s ease,
-        background .22s ease,
-        filter .2s ease;
-      box-shadow:0 20px 45px rgba(127,29,29,.85);
+        box-shadow .18s ease,
+        background .18s ease,
+        filter .18s ease;
+      box-shadow:0 16px 36px rgba(127,29,29,.85);
       border-radius:18px;
-      text-shadow:0 0 12px rgba(248,250,252,.35);
+      text-shadow:0 0 10px rgba(248,250,252,.35);
+      padding:0 8px;
+      text-align:center;
     }
 
     .door:hover:not(.door-locked):not(:disabled){
-      transform:translateY(-2px) scale(1.01);
-      box-shadow:0 28px 60px rgba(127,29,29,.95);
-      filter:brightness(1.06);
+      transform:translateY(-1px) scale(1.01);
+      box-shadow:0 22px 48px rgba(127,29,29,.95);
+      filter:brightness(1.05);
     }
 
     .door:active:not(.door-locked):not(:disabled){
       transform:translateY(0) scale(.99);
-      box-shadow:0 16px 32px rgba(127,29,29,.7);
+      box-shadow:0 12px 30px rgba(127,29,29,.7);
     }
 
     .door-open{
@@ -199,9 +221,9 @@
         #111827 10px,
         #111827 20px
       );
-      box-shadow:0 16px 40px rgba(15,23,42,.9);
+      box-shadow:0 14px 34px rgba(15,23,42,.9);
       font-size:1rem;
-      letter-spacing:.2em;
+      letter-spacing:.12em;
       text-shadow:none;
     }
 
@@ -212,15 +234,10 @@
 
     .notice{
       text-align:center;
-      font-size:.8rem;
+      font-size:.78rem;
       color:var(--text-muted);
-      margin-top:18px;
-    }
-
-    @media (max-width:600px){
-      body{padding:18px 12px 26px;}
-      h1{font-size:1.7rem;}
-      .cell{min-height:140px;}
+      margin-top:16px;
+      padding:0 10px;
     }
   </style>
 </head>
@@ -228,7 +245,7 @@
   <div class="page">
     <h1>Rock in Avent</h1>
     <p class="subtitle">
-      Un titre par jour jusqu’à Noël. Les cases futures restent fermées, seuls les jours débloqués peuvent être ouverts.
+      Un titre par jour jusqu’à la fin du mois. Les cases futures restent fermées, seuls les jours déjà débloqués peuvent être ouverts.
     </p>
     <p class="tagline">Calendrier musical – version française</p>
 
@@ -247,8 +264,11 @@
     // Même feuille que la version italienne
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqcYY8zIGx9HtwbeLBpq_1nGVdPIOA5Sb-GiMkc--Prmh0UXiJJHq1_HrjqWZTqMxM48aJH0XLfjKM/pub?gid=0&single=true&output=csv';
 
-    // Clé localStorage pour cette version FR (separata dalla versione IT)
+    // Clé localStorage pour cette version FR
     const STORAGE_KEY = 'rockInAvent_fr_openDays_v1';
+
+    const FIRST_DAY = 9;
+    const LAST_DAY  = 31;
 
     function loadOpenDays(){
       try{
@@ -269,7 +289,7 @@
         const unique = Array.from(new Set(days)).sort((a,b) => a - b);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(unique));
       }catch(e){
-        // niente: se localStorage è disabilitato non blocchiamo l’app
+        // se localStorage è disabilitato, ignoriamo
       }
     }
 
@@ -313,9 +333,6 @@
         const todayDay = now.getDate();    // 1–31
         const todayMonth = now.getMonth(); // 0–11 (0 = janvier, 11 = décembre)
 
-        const FIRST_DAY = 9;
-        const LAST_DAY  = 31;
-
         container.innerHTML = '';
 
         for (let day = FIRST_DAY; day <= LAST_DAY; day++){
@@ -354,24 +371,26 @@
           door.type = 'button';
           door.className = 'door';
 
-          const isFuture = day > todayDay && todayMonth === 11; // en décembre : les jours > aujourd'hui sont bloqués
+          // Giorni futuri bloccati solo in dicembre
+          const isFuture = (todayMonth === 11 && day > todayDay);
+
           const isOpen = !isFuture && openDays.includes(day);
 
           if (isFuture){
-            // Jour futur : verrouillé
+            // Jour futur : verrouillé ma con "9 décembre", "10 décembre", ecc.
             door.classList.add('door-locked');
             door.disabled = true;
-            door.textContent = day + ' décembre';   // <--- qui la modifica
+            door.textContent = day + ' décembre';
             door.title = `Disponible le ${day} décembre`;
           } else {
             if (isOpen){
-              // déjà ouvert sur cet appareil
+              // Déjà ouvert sur cet appareil
               cell.classList.add('open');
               door.classList.add('door-open');
               door.disabled = true;
             } else {
-              // jour déblocable (≤ aujourd’hui)
-              door.textContent = (day === todayDay) ? 'OUVRIR' : '🎸';
+              // Jour déblocable (≤ aujourd’hui)
+              door.textContent = (day === todayDay) ? 'OUVRIR' : (day + ' décembre');
               door.addEventListener('click', () => {
                 cell.classList.add('open');
                 door.classList.add('door-open');
@@ -399,4 +418,5 @@
   </script>
 </body>
 </html>
+
 
