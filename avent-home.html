@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock in Avvento – Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root{
+      --bg-body:#030712;
+      --bg-panel:#020617;
+      --accent:#f97316;
+      --accent-soft:#fed7aa;
+      --text-main:#e5e7eb;
+      --text-muted:#9ca3af;
+      --border:#1f2937;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      padding:18px 10px 28px;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+      background:radial-gradient(circle at top,#111827 0,#020617 45%,#000 100%);
+      color:var(--text-main);
+    }
+
+    .page{
+      max-width:1000px;
+      margin:0 auto;
+    }
+
+    header{
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:2rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#f9fafb;
+      text-shadow:0 0 10px rgba(248,250,252,0.2),
+                  0 0 25px rgba(248,113,113,0.35);
+    }
+
+    .subtitle{
+      font-size:.9rem;
+      color:var(--text-muted);
+      margin:0;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:2fr 1.4fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    @media (max-width:800px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .card{
+      background:radial-gradient(circle at top left,#111827 0,#020617 55%,#020617 100%);
+      border-radius:18px;
+      padding:16px 16px 14px;
+      border:1px solid var(--border);
+      box-shadow:0 12px 30px rgba(15,23,42,.75);
+    }
+
+    .card h2{
+      margin:0 0 6px;
+      font-size:1.2rem;
+    }
+
+    .card p{
+      margin:0 0 14px;
+      font-size:.88rem;
+      color:var(--text-muted);
+    }
+
+    /* --- FORM CARICAMENTO --- */
+    .form-grid{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:4px;
+    }
+
+    .form-field label{
+      display:block;
+      font-size:.82rem;
+      font-weight:600;
+      color:var(--text-main);
+      margin-bottom:3px;
+    }
+
+    .form-field input{
+      width:100%;
+      border-radius:10px;
+      border:1px solid #374151;
+      padding:8px 10px;
+      font-size:.9rem;
+      background:#020617;
+      color:var(--text-main);
+      transition:border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+
+    .form-field input::placeholder{
+      color:#6b7280;
+    }
+
+    .form-field input:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(249,115,22,0.45);
+      background:#020617;
+    }
+
+    .form-hint{
+      font-size:.75rem;
+      color:var(--text-muted);
+      margin-top:2px;
+    }
+
+    .form-actions{
+      margin-top:10px;
+      display:flex;
+      justify-content:flex-end;
+    }
+
+    .btn-primary{
+      border:none;
+      border-radius:999px;
+      padding:9px 18px;
+      font-size:.9rem;
+      font-weight:600;
+      cursor:pointer;
+      background:linear-gradient(135deg,#f97316,#ec4899);
+      color:#f9fafb;
+      box-shadow:0 12px 32px rgba(248,113,22,0.5);
+      transition:transform .12s ease, box-shadow .15s ease, filter .12s ease;
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.05);
+      box-shadow:0 16px 40px rgba(248,113,22,0.7);
+    }
+
+    .btn-primary:active{
+      transform:translateY(0);
+      box-shadow:0 9px 24px rgba(248,113,22,0.5);
+    }
+
+    #formMessage{
+      margin-top:8px;
+      font-size:.85rem;
+      min-height:1.1em;
+    }
+
+    /* --- BOX ASCOLTO --- */
+    .listen-box{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .listen-highlight{
+      font-size:.86rem;
+      color:var(--accent-soft);
+    }
+
+    .listen-link-main{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      text-decoration:none;
+      font-weight:650;
+      font-size:.95rem;
+      background:#f97316;
+      color:#111827;
+      box-shadow:0 12px 30px rgba(249,115,22,0.65);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      transition:transform .12s ease, box-shadow .15s ease, filter .12s ease;
+    }
+
+    .listen-link-main span.icon{
+      font-size:1.1rem;
+    }
+
+    .listen-link-main:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.05);
+      box-shadow:0 16px 40px rgba(249,115,22,0.8);
+    }
+
+    .listen-link-main:active{
+      transform:translateY(0);
+      box-shadow:0 10px 26px rgba(249,115,22,0.6);
+    }
+
+    .listen-note{
+      font-size:.8rem;
+      color:var(--text-muted);
+    }
+
+    footer{
+      margin-top:18px;
+      text-align:center;
+      font-size:.75rem;
+      color:var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Rock in Avvento</h1>
+      <p class="subtitle">Una piccola centrale di Natale rock: da qui carichi i brani e li ascolti nel calendario.</p>
+    </header>
+
+    <main class="layout">
+      <!-- SEZIONE: CARICAMENTO BRANI -->
+      <section class="card">
+        <h2>Carica un nuovo brano</h2>
+        <p>
+          Compila questo modulo per aggiungere un brano al foglio Google collegato.
+          I campi devono corrispondere alla struttura: <strong>Giorno, Titolo, Artista, Proposto da, URL</strong>.
+        </p>
+
+        <form id="proposalForm" class="form-grid">
+          <div class="form-field">
+            <label for="giorno">Giorno (9–31)</label>
+            <input id="giorno" type="number" name="Giorno" min="9" max="31" required>
+            <p class="form-hint">Numero del giorno che userai nel calendario (stessa colonna “Giorno” del foglio).</p>
+          </div>
+
+          <div class="form-field">
+            <label for="titolo">Titolo</label>
+            <input id="titolo" type="text" name="Titolo" required>
+          </div>
+
+          <div class="form-field">
+            <label for="artista">Artista</label>
+            <input id="artista" type="text" name="Artista" required>
+          </div>
+
+          <div class="form-field">
+            <label for="propostoDa">Proposto da</label>
+            <input id="propostoDa" type="text" name="Proposto da" required>
+          </div>
+
+          <div class="form-field">
+            <label for="url">URL YouTube Music</label>
+            <input id="url" type="url" name="URL" placeholder="https://music.youtube.com/…" required>
+            <p class="form-hint">Incolla il link al brano (idealmente da YouTube Music).</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Invia brano al foglio</button>
+          </div>
+        </form>
+
+        <p id="formMessage"></p>
+      </section>
+
+      <!-- SEZIONE: ASCOLTO CALENDARIO -->
+      <section class="card">
+        <h2>Ascolta il calendario</h2>
+        <p>
+          Vai al calendario <strong>Rock in Avent (FR)</strong> dove ogni giorno si sblocca una casella con il brano.
+        </p>
+
+        <div class="listen-box">
+          <div class="listen-highlight">
+            Versione francese, ottimizzata per telefono, dal 9 al 31 dicembre.
+          </div>
+
+          <a class="listen-link-main" href="rock-in-avent-fr.html">
+            <span class="icon">🎸</span>
+            <span>Apri Rock in Avent FR</span>
+          </a>
+
+          <div class="listen-note">
+            Il calendario legge gli stessi dati dal foglio Google.  
+            Le caselle aperte vengono ricordate sul dispositivo (localStorage).
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Rock in Avvento – GitHub Pages · foglio Google condiviso per tutti i calendari.
+    </footer>
+  </div>
+
+  <script>
+    // 👉 Sostituisci con l’URL della tua Web App Apps Script che usi per il calendario IT classico
+    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/IL_TUO_URL_EXEC/exec';
+
+    function initFormHandler(){
+      const form = document.getElementById('proposalForm');
+      const msgEl = document.getElementById('formMessage');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const data = {};
+        new FormData(form).forEach((v,k)=> data[k] = (v || '').toString().trim());
+
+        msgEl.textContent = 'Invio in corso…';
+        msgEl.style.color = '#e5e7eb';
+
+        try{
+          const resp = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+              // text/plain per evitare problemi di CORS/preflight
+              'Content-Type': 'text/plain;charset=utf-8'
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (!resp.ok){
+            throw new Error('HTTP ' + resp.status);
+          }
+
+          let json = {};
+          try {
+            json = await resp.json();
+          } catch(e){
+            // se la risposta non è JSON valido, non blocchiamo
+          }
+
+          if (json.status === 'ok' || Object.keys(json).length === 0){
+            msgEl.textContent = '✅ Brano inviato correttamente al foglio.';
+            msgEl.style.color = '#bbf7d0';
+            form.reset();
+          } else {
+            throw new Error(json.msg || 'Risposta non valida dal server');
+          }
+        } catch(err){
+          console.error(err);
+          msgEl.textContent = '❌ Errore durante l’invio: ' + err.message;
+          msgEl.style.color = '#fecaca';
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initFormHandler);
+  </script>
+</body>
+</html>
