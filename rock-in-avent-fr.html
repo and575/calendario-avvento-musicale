@@ -361,7 +361,7 @@
             // Jour futur : verrouillé
             door.classList.add('door-locked');
             door.disabled = true;
-            door.textContent = 'LOCK';
+            door.textContent = day + ' décembre';   // <--- qui la modifica
             door.title = `Disponible le ${day} décembre`;
           } else {
             if (isOpen){
@@ -399,3 +399,4 @@
   </script>
 </body>
 </html>
+
