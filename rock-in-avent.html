@@ -186,16 +186,24 @@
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqcYY8zIGx9HtwbeLBpq_1nGVdPIOA5Sb-GiMkc--Prmh0UXiJJHq1_HrjqWZTqMxM48aJH0XLfjKM/pub?gid=0&single=true&output=csv';
 
     function parseCSV(text){
-      const rows = text.trim().split('\n');
-      const headers = rows[0].match(/(".*?"|[^,]+)(?=\\s*,|\\s*$)/g)
-        .map(h => h.replace(/^"|"$/g,'').trim());
-      return rows.slice(1).map(line => {
-        const cols = line.match(/(".*?"|[^,]+)(?=\\s*,|\\s*$)/g) || [];
-        const obj = {};
-        headers.forEach((h,i) => obj[h] = (cols[i] || '').replace(/^"|"$/g,'').trim());
-        return obj;
-      });
-    }
+  const rows = text.trim().split('\n');
+  if (rows.length === 0) return [];
+
+  // prima riga: intestazioni (Giorno,Titolo,Artista,Proposto da,URL)
+  const headers = rows[0].split(',').map(h =>
+    h.replace(/^"|"$/g, '').trim()
+  );
+
+  // righe successive: dati
+  return rows.slice(1).map(line => {
+    const cols = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = (cols[i] || '').replace(/^"|"$/g, '').trim();
+    });
+    return obj;
+  });
+}
 
     async function renderCalendar(){
       const statusEl = document.getElementById('status');
@@ -296,4 +304,5 @@
   </script>
 </body>
 </html>
+
 
