@@ -306,21 +306,20 @@
     <p class="subtitle">
       Un titre par jour jusqu’à la fin du mois. Les cases futures restent fermées, seuls les jours déjà débloqués peuvent être ouverts.
     </p>
-    <p class="tagline">Calendrier musical – version française</p>
+    <p class="tagline">Calendrier musical</p>
 
     <p id="status">Chargement du calendrier…</p>
 
     <div id="calendar" class="grid"></div>
 
     <p class="notice">
-      Les morceaux sont chargés depuis une feuille Google Sheets commune
-      (<strong>Giorno, Titolo, Artista, Proposto da, URL</strong>).
+      Les morceaux sont chargés depuis une feuille Google Sheets commune.
       L’état des cases ouvertes est enregistré sur cet appareil (localStorage).
     </p>
   </div>
 
   <script>
-    // Même feuille que la version italienne
+    // nouvelle feuille
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbB8anD_KDj7SJ_2zoUdRQsVSEl5HSoOe20m4PGYB73BqnJ9Kx5HS2dfokbOMeQiIQJJPzRvo1N3xv/pub?output=csv';
 
     // Clé localStorage pour cette version FR
