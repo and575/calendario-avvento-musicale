@@ -300,11 +300,7 @@
 <body>
   <div class="page">
     <div class="page-header">
-      <h1>Muzik in Avent</h1>
-      <a href="avent-home.html" class="back-home">
-        <span class="icon">←</span>
-        <span>Home</span>
-      </a>
+      <h1>Avent Rock</h1>
     </div>
 
     <p class="subtitle">
